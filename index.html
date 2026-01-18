@@ -2,178 +2,183 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3859/3859032.png">
-
-    <title>한글 소리 놀이</title>
-    <script src="https://unpkg.com/hangul-js" type="text/javascript"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>초롱반 한글놀이</title>
+    <script src="https://cdn.jsdelivr.net/npm/hangul-js@0.2.6/hangul.min.js"></script>
     <style>
+        /* 1. 전체 화면 설정 */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Jua', sans-serif;
             background-color: #f0f8ff;
             text-align: center;
             margin: 0;
-            padding: 20px 10px; /* 여백 조정 */
+            padding: 10px; /* 여백을 줄여서 화면을 더 넓게 씀 */
             user-select: none;
             -webkit-user-select: none;
             touch-action: manipulation;
+            height: 100vh; /* 화면 높이 100% 사용 */
+            box-sizing: border-box;
         }
 
-        h1 { color: #555; font-size: 2rem; margin-bottom: 20px; }
+        h1 { 
+            color: #555; 
+            font-size: 1.8rem; 
+            margin: 10px 0; 
+        }
 
-        /* 화면 상자도 꽉 차게 */
+        /* 2. 글자 나오는 화면 (태블릿 대응) */
         #display-box {
             background-color: white;
-            width: 95%; /* 가로 95% 차지 */
-            max-width: 800px; /* 너무 커지지 않게 제한 */
-            height: 15vh; /* 화면 높이에 비례 */
-            min-height: 100px;
-            margin: 0 auto 30px auto;
-            border-radius: 20px;
-            border: 6px solid #FFD700;
+            width: 98%; /* 가로 거의 꽉 차게 */
+            height: 15vh; /* 화면 높이의 15% 만큼 */
+            min-height: 100px; /* 너무 작아지지 않게 */
+            margin: 0 auto 15px auto;
+            border-radius: 15px;
+            border: 5px solid #FFD700;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 5rem; /* 글자도 크게 */
+            font-size: 4rem; /* 글자 크기 */
             color: #333;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        /* 버튼 판 키우기 */
+        /* 3. 버튼 판 (유동적으로 늘어나게 설정) */
         .keyboard {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 1.5%; /* 버튼 사이 간격 */
-            width: 100%;
-            max-width: 900px; /* 태블릿 크기 대응 */
-            margin: 0 auto;
+            gap: 1%; /* 버튼 사이 간격 좁게 */
+            width: 100%; /* 너비 100% 사용 */
+            margin-bottom: 15px;
         }
 
-        /* 버튼이 화면에 맞춰 늘어나게 설정 */
+        /* 4. 개별 버튼 (화면 크기에 맞춰 알아서 커짐) */
         button {
-            width: 13%; /* 한 줄에 7개 정도 들어가게 */
-            aspect-ratio: 1/1; /* 정사각형 비율 유지 */
-            font-size: 2rem; /* 글씨도 큼직하게 */
+            width: 13%; /* 한 줄에 7개 들어가도록 설정 (100% ÷ 7) */
+            aspect-ratio: 1/1; /* 정사각형 모양 유지 */
+            font-size: 1.8rem; /* 글씨 큼직하게 */
             border: none;
-            border-radius: 15px;
+            border-radius: 10px;
             cursor: pointer;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+            box-shadow: 0 3px 0 rgba(0,0,0,0.2);
             font-family: inherit;
             background-color: white;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
-        button:active { transform: translateY(4px); box-shadow: none; }
+        button:active { transform: translateY(3px); box-shadow: none; }
 
         .consonant { background-color: #ADD8E6; color: #0056b3; }
         .vowel { background-color: #FFB6C1; color: #c71585; }
         
+        /* 5. 기능 버튼 (듣기, 지우기) */
         .control-panel {
-            margin-top: 10px;
-            margin-bottom: 30px;
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .btn-speak, .btn-clear {
-            width: 30%; /* 기능 버튼도 큼직하게 */
+            width: 40%; /* 버튼이 시원시원하게 커짐 */
             height: 60px;
             font-size: 1.5rem;
             aspect-ratio: auto; /* 얘는 직사각형 */
+            border-radius: 15px;
         }
 
         .btn-speak { background-color: #98FB98; color: #006400; font-weight: bold; }
         .btn-clear { background-color: #FF6347; color: white; font-weight: bold; }
+
+        /* 미디어 쿼리: 화면이 아주 클 때만 살짝 제한 (너무 왕만해지지 않게) */
+        @media (min-width: 800px) {
+            #display-box { max-width: 800px; font-size: 6rem; }
+            .keyboard { max-width: 800px; margin: 0 auto 20px auto; }
+            .control-panel { max-width: 800px; margin: 0 auto 20px auto; }
+            button { font-size: 2.5rem; } /* 태블릿에서는 글자 더 크게 */
+        }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <h1>한글 소리 놀이 🎵</h1>
+    <h1>초롱반 한글놀이 🎵</h1>
+    
     <div id="display-box"></div>
 
     <div class="control-panel">
-        <button class="btn-speak" onclick="speakText()">🔊 듣기</button>
-        <button class="btn-backspace" onclick="popChar()">⬅ 지우기</button>
         <button class="btn-clear" onclick="resetText()">싹 지우기</button>
+        <button class="btn-speak" onclick="speakText()">🔊 들어보기</button>
     </div>
 
-    <div class="main-container">
-        <div class="section">
-            <div class="section-title">자음 친구들</div>
-            <div class="keyboard consonant-grid">
-                <button class="key consonant" onclick="addChar('ㄱ')">ㄱ</button>
-                <button class="key consonant" onclick="addChar('ㄴ')">ㄴ</button>
-                <button class="key consonant" onclick="addChar('ㄷ')">ㄷ</button>
-                <button class="key consonant" onclick="addChar('ㄹ')">ㄹ</button>
-                <button class="key consonant" onclick="addChar('ㅁ')">ㅁ</button>
-                <button class="key consonant" onclick="addChar('ㅂ')">ㅂ</button>
-                <button class="key consonant" onclick="addChar('ㅅ')">ㅅ</button>
-                <button class="key consonant" onclick="addChar('ㅇ')">ㅇ</button>
-                <button class="key consonant" onclick="addChar('ㅈ')">ㅈ</button>
-                <button class="key consonant" onclick="addChar('ㅊ')">ㅊ</button>
-                <button class="key consonant" onclick="addChar('ㅋ')">ㅋ</button>
-                <button class="key consonant" onclick="addChar('ㅌ')">ㅌ</button>
-                <button class="key consonant" onclick="addChar('ㅍ')">ㅍ</button>
-                <button class="key consonant" onclick="addChar('ㅎ')">ㅎ</button>
-                <button class="key consonant double" onclick="addChar('ㄲ')">ㄲ</button>
-                <button class="key consonant double" onclick="addChar('ㄸ')">ㄸ</button>
-                <button class="key consonant double" onclick="addChar('ㅃ')">ㅃ</button>
-                <button class="key consonant double" onclick="addChar('ㅆ')">ㅆ</button>
-                <button class="key consonant double" onclick="addChar('ㅉ')">ㅉ</button>
-            </div>
-        </div>
+    <div class="keyboard">
+        <button class="consonant" onclick="addChar('ㄱ')">ㄱ</button>
+        <button class="consonant" onclick="addChar('ㄴ')">ㄴ</button>
+        <button class="consonant" onclick="addChar('ㄷ')">ㄷ</button>
+        <button class="consonant" onclick="addChar('ㄹ')">ㄹ</button>
+        <button class="consonant" onclick="addChar('ㅁ')">ㅁ</button>
+        <button class="consonant" onclick="addChar('ㅂ')">ㅂ</button>
+        <button class="consonant" onclick="addChar('ㅅ')">ㅅ</button>
+        <button class="consonant" onclick="addChar('ㅇ')">ㅇ</button>
+        <button class="consonant" onclick="addChar('ㅈ')">ㅈ</button>
+        <button class="consonant" onclick="addChar('ㅊ')">ㅊ</button>
+        <button class="consonant" onclick="addChar('ㅋ')">ㅋ</button>
+        <button class="consonant" onclick="addChar('ㅌ')">ㅌ</button>
+        <button class="consonant" onclick="addChar('ㅍ')">ㅍ</button>
+        <button class="consonant" onclick="addChar('ㅎ')">ㅎ</button>
+    </div>
 
-        <div class="section">
-            <div class="section-title">모음 친구들</div>
-            <div class="keyboard vowel-grid">
-                <button class="key vowel" onclick="addChar('ㅏ')">ㅏ</button>
-                <button class="key vowel" onclick="addChar('ㅑ')">ㅑ</button>
-                <button class="key vowel" onclick="addChar('ㅓ')">ㅓ</button>
-                <button class="key vowel" onclick="addChar('ㅕ')">ㅕ</button>
-                <button class="key vowel" onclick="addChar('ㅗ')">ㅗ</button>
-                <button class="key vowel" onclick="addChar('ㅛ')">ㅛ</button>
-                <button class="key vowel" onclick="addChar('ㅜ')">ㅜ</button>
-                <button class="key vowel" onclick="addChar('ㅠ')">ㅠ</button>
-                <button class="key vowel" onclick="addChar('ㅡ')">ㅡ</button>
-                <button class="key vowel" onclick="addChar('ㅣ')">ㅣ</button>
-                <button class="key vowel dvowel" onclick="addChar('ㅐ')">ㅐ</button>
-                <button class="key vowel dvowel" onclick="addChar('ㅒ')">ㅒ</button>
-                <button class="key vowel dvowel" onclick="addChar('ㅔ')">ㅔ</button>
-                <button class="key vowel dvowel" onclick="addChar('ㅖ')">ㅖ</button>
-                <button class="key vowel dvowel" onclick="addChar('ㅘ')">ㅘ</button>
-                <button class="key vowel dvowel" onclick="addChar('ㅝ')">ㅝ</button>
-                <button class="key vowel dvowel" onclick="addChar('ㅢ')">ㅢ</button>
-            </div>
-        </div>
+    <div class="keyboard">
+        <button class="vowel" onclick="addChar('ㅏ')">ㅏ</button>
+        <button class="vowel" onclick="addChar('ㅑ')">ㅑ</button>
+        <button class="vowel" onclick="addChar('ㅓ')">ㅓ</button>
+        <button class="vowel" onclick="addChar('ㅕ')">ㅕ</button>
+        <button class="vowel" onclick="addChar('ㅗ')">ㅗ</button>
+        <button class="vowel" onclick="addChar('ㅛ')">ㅛ</button>
+        <button class="vowel" onclick="addChar('ㅜ')">ㅜ</button>
+        <button class="vowel" onclick="addChar('ㅠ')">ㅠ</button>
+        <button class="vowel" onclick="addChar('ㅡ')">ㅡ</button>
+        <button class="vowel" onclick="addChar('ㅣ')">ㅣ</button>
     </div>
 
     <script>
         let jamoStack = []; 
-        let synth = window.speechSynthesis;
 
-        // 안드로이드 터치 소리 지연 방지
-        window.addEventListener('touchstart', function() {
-            let silence = new SpeechSynthesisUtterance('');
-            synth.speak(silence);
-        }, { once: true });
+        window.onload = function() {
+            if (typeof Hangul === 'undefined') {
+                alert("인터넷 연결을 확인해주세요. 한글 도구가 로딩되지 않았습니다.");
+            }
+        };
 
-        function addChar(char) { jamoStack.push(char); updateDisplay(); }
-        function popChar() { if (jamoStack.length > 0) { jamoStack.pop(); updateDisplay(); } }
-        function resetText() { jamoStack = []; updateDisplay(); }
-        function updateDisplay() { document.getElementById('display-box').innerText = Hangul.assemble(jamoStack); }
+        function addChar(char) {
+            jamoStack.push(char); 
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            if (typeof Hangul === 'undefined') return;
+            const assembledText = Hangul.assemble(jamoStack);
+            document.getElementById('display-box').innerText = assembledText;
+        }
+
+        function resetText() {
+            jamoStack = []; 
+            document.getElementById('display-box').innerText = "";
+        }
+
         function speakText() {
             const text = document.getElementById('display-box').innerText;
             if (!text) return; 
-            synth.cancel();
+
+            window.speechSynthesis.cancel();
+
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'ko-KR'; 
-            utterance.rate = 0.5; 
-            synth.speak(utterance); 
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0; 
+
+            window.speechSynthesis.speak(utterance); 
         }
     </script>
 </body>
