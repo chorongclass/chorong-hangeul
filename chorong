@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>한글 소리 놀이 (최종본)</title>
+    <script src="https://unpkg.com/hangul-js" type="text/javascript"></script>
+    <style>
+        body { 
+            font-family: 'Jua', sans-serif; 
+            background-color: #f0f8ff; 
+            text-align: center; 
+            margin: 0; 
+            padding: 15px; 
+            touch-action: manipulation; 
+        }
+
+        h1 { color: #555; font-size: 1.5rem; margin-bottom: 10px; }
+
+        /* 글자 상자 크기를 다시 원래대로 줄였습니다 */
+        #display-box {
+            background-color: white; 
+            width: 90%; 
+            max-width: 450px; 
+            height: 120px; 
+            margin: 10px auto; 
+            border-radius: 20px; 
+            border: 5px solid #FFD700;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-size: 4rem; 
+            color: #333; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .section-title { font-size: 1rem; color: #777; margin: 15px 0 5px; font-weight: bold; }
+
+        .keyboard { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 8px; 
+            max-width: 600px; 
+            margin: 0 auto; 
+        }
+
+        /* 버튼 크기도 원상복구 (65px) */
+        button {
+            width: 65px;  
+            height: 65px; 
+            font-size: 1.5rem; 
+            border: none; 
+            border-radius: 15px;
+            cursor: pointer; 
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2); 
+            font-family: inherit;
+        }
+
+        button:active { transform: translateY(3px); box-shadow: none; }
+
+        .consonant { background-color: #ADD8E6; color: #0056b3; }
+        .double-consonant { background-color: #98FB98; color: #006400; }
+        .vowel { background-color: #FFB6C1; color: #c71585; }
+        .double-vowel { background-color: #FFDAB9; color: #d2691e; }
+
+        .control-panel { 
+            margin: 15px 0; 
+            display: flex; 
+            justify-content: center; 
+            gap: 10px; 
+        }
+
+        /* 제어 버튼 크기 조절 */
+        .btn-speak { background-color: #FFD700; color: #8b4513; width: 110px; height: 60px; font-weight: bold; font-size: 1.1rem; border-radius: 15px; }
+        .btn-backspace { background-color: #ffa726; color: white; width: 110px; height: 60px; font-weight: bold; font-size: 1.1rem; border-radius: 15px; }
+        .btn-clear { background-color: #FF6347; color: white; width: 110px; height: 60px; font-weight: bold; font-size: 1.1rem; border-radius: 15px; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <h1>한글 소리 놀이 🎵</h1>
+    
+    <div id="display-box"></div>
+
+    <div class="control-panel">
+        <button class="btn-speak" onclick="speakText()">🔊 듣기</button>
+        <button class="btn-backspace" onclick="popChar()">⬅ 지우기</button>
+        <button class="btn-clear" onclick="resetText()">싹 지우기</button>
+    </div>
+
+    <div class="section-title">자음 친구들</div>
+    <div class="keyboard">
+        <button class="consonant" onclick="addChar('ㄱ')">ㄱ</button>
+        <button class="consonant" onclick="addChar('ㄴ')">ㄴ</button>
+        <button class="consonant" onclick="addChar('ㄷ')">ㄷ</button>
+        <button class="consonant" onclick="addChar('ㄹ')">ㄹ</button>
+        <button class="consonant" onclick="addChar('ㅁ')">ㅁ</button>
+        <button class="consonant" onclick="addChar('ㅂ')">ㅂ</button>
+        <button class="consonant" onclick="addChar('ㅅ')">ㅅ</button>
+        <button class="consonant" onclick="addChar('ㅇ')">ㅇ</button>
+        <button class="consonant" onclick="addChar('ㅈ')">ㅈ</button>
+        <button class="consonant" onclick="addChar('ㅊ')">ㅊ</button>
+        <button class="consonant" onclick="addChar('ㅋ')">ㅋ</button>
+        <button class="consonant" onclick="addChar('ㅌ')">ㅌ</button>
+        <button class="consonant" onclick="addChar('ㅍ')">ㅍ</button>
+        <button class="consonant" onclick="addChar('ㅎ')">ㅎ</button>
+        <button class="double-consonant" onclick="addChar('ㄲ')">ㄲ</button>
+        <button class="double-consonant" onclick="addChar('ㄸ')">ㄸ</button>
+        <button class="double-consonant" onclick="addChar('ㅃ')">ㅃ</button>
+        <button class="double-consonant" onclick="addChar('ㅆ')">ㅆ</button>
+        <button class="double-consonant" onclick="addChar('ㅉ')">ㅉ</button>
+    </div>
+
+    <div class="section-title">모음 친구들</div>
+    <div class="keyboard">
+        <button class="vowel" onclick="addChar('ㅏ')">ㅏ</button>
+        <button class="vowel" onclick="addChar('ㅑ')">ㅑ</button>
+        <button class="vowel" onclick="addChar('ㅓ')">ㅓ</button>
+        <button class="vowel" onclick="addChar('ㅕ')">ㅕ</button>
+        <button class="vowel" onclick="addChar('ㅗ')">ㅗ</button>
+        <button class="vowel" onclick="addChar('ㅛ')">ㅛ</button>
+        <button class="vowel" onclick="addChar('ㅜ')">ㅜ</button>
+        <button class="vowel" onclick="addChar('ㅠ')">ㅠ</button>
+        <button class="vowel" onclick="addChar('ㅡ')">ㅡ</button>
+        <button class="vowel" onclick="addChar('ㅣ')">ㅣ</button>
+        <button class="double-vowel" onclick="addChar('ㅐ')">ㅐ</button>
+        <button class="double-vowel" onclick="addChar('ㅒ')">ㅒ</button>
+        <button class="double-vowel" onclick="addChar('ㅔ')">ㅔ</button>
+        <button class="double-vowel" onclick="addChar('ㅖ')">ㅖ</button>
+        <button class="double-vowel" onclick="addChar('ㅘ')">ㅘ</button>
+        <button class="double-vowel" onclick="addChar('ㅝ')">ㅝ</button>
+        <button class="double-vowel" onclick="addChar('ㅢ')">ㅢ</button>
+    </div>
+
+    <script>
+        let jamoStack = []; 
+        let synth = window.speechSynthesis;
+
+        window.addEventListener('touchstart', function() {
+            let silence = new SpeechSynthesisUtterance('');
+            synth.speak(silence);
+        }, { once: true });
+
+        function addChar(char) {
+            jamoStack.push(char); 
+            updateDisplay();
+        }
+
+        function popChar() {
+            if (jamoStack.length > 0) {
+                jamoStack.pop();
+                updateDisplay();
+            }
+        }
+
+        function updateDisplay() {
+            const assembledText = Hangul.assemble(jamoStack);
+            document.getElementById('display-box').innerText = assembledText;
+        }
+
+        function resetText() {
+            jamoStack = []; 
+            document.getElementById('display-box').innerText = "";
+        }
+
+        function speakText() {
+            const text = document.getElementById('display-box').innerText;
+            if (!text) return; 
+            synth.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR'; 
+            utterance.rate = 0.5; 
+            
+            const voices = synth.getVoices();
+            const koVoice = voices.find(v => v.lang.includes('ko') || v.lang.includes('KR'));
+            if (koVoice) utterance.voice = koVoice;
+
+            synth.speak(utterance); 
+        }
+    </script>
+</body>
+</html>
